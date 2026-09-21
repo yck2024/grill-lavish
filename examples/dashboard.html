@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grill in Lavish</title>
+<style>
+:root{color-scheme:light;--ink:#152c2a;--muted:#536965;--line:#d9e1db;--accent:#17644d;--paper:#f5f4ed}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.6 system-ui,sans-serif}
+header{padding:42px max(24px,calc((100% - 1180px)/2));background:#143d33;color:#fff}
+.eyebrow{letter-spacing:.13em;text-transform:uppercase;font-size:12px;font-weight:750;color:#b5d5c7}
+h1{font-size:clamp(27px,4vw,43px);line-height:1.16;max-width:880px;margin:12px 0 18px}header p{max-width:780px;color:#d6e5dd;margin-bottom:0}
+main{max-width:1228px;margin:auto;padding:28px 24px 60px}.meta{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px}
+.pill{display:inline-block;border:1px solid var(--line);padding:4px 12px;border-radius:24px;background:#fff;font-size:13px}
+.layout{display:grid;grid-template-columns:minmax(0,1.8fr) minmax(260px,1fr);gap:28px;align-items:start}
+h2{font-size:21px;margin:0 0 16px}h3{font-size:21px;line-height:1.4;margin:8px 0}.card,.panel{border:1px solid var(--line);border-radius:16px;padding:24px;background:#fff;margin-bottom:18px;overflow-wrap:anywhere}
+.qid{font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--accent)}.muted{color:var(--muted)}
+.recommendation{background:#eef4ed;border-left:3px solid var(--accent);padding:12px 14px;font-size:14px;margin:16px 0}
+label.option{display:flex;gap:12px;border:1px solid var(--line);padding:12px;border-radius:10px;margin:9px 0;cursor:pointer}
+label.option:has(input:checked){border-color:var(--accent);background:#eef6f0}input[type=radio]{margin-top:6px;accent-color:var(--accent)}
+.option small{display:block;color:var(--muted);margin-top:2px}.notes-label{display:block;font-weight:650;font-size:14px;margin-top:16px}
+textarea{width:100%;min-height:88px;border:1px solid #a9bdb2;border-radius:9px;padding:12px;background:#fff;color:var(--ink);font:inherit;resize:vertical}
+button{border:0;border-radius:8px;background:var(--accent);color:#fff;font:600 14px system-ui;padding:11px 16px;cursor:pointer;margin-top:12px}
+button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid #bd7200;outline-offset:3px}
+.status{font-size:13px;min-height:22px;margin:8px 0 0}.decision{padding:14px 0;border-bottom:1px solid var(--line)}.decision:last-child{border:0}
+.decision strong{display:block;font-size:14px}.decision p{font-size:14px;margin:5px 0}.state{font-size:12px;color:var(--accent);font-weight:750}
+summary{cursor:pointer;font-weight:650}.panel p{font-size:14px}.notice{padding:14px 18px;border-radius:10px;background:#e8eee4;margin-bottom:24px;font-size:14px}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:20px;margin-top:26px}
+@media(max-width:800px){.layout{grid-template-columns:1fr}header{padding:28px 20px}main{padding:22px 16px}.card,.panel{padding:20px}}
+</style>
+</head>
+<body>
+<header><div class="eyebrow">Grill in Lavish · Think it through</div><h1 id="goal"></h1><p id="summary"></p></header>
+<main>
+<div class="meta" id="meta"></div>
+<div class="notice">Choose an answer or write your own. Queue each answer, then use Lavish’s <strong>Send to Agent</strong> to submit the round. The agent will evaluate your answers and generate the next questions.</div>
+<div class="layout"><section aria-labelledby="round-title"><h2 id="round-title">Current questions</h2><div id="questions"></div></section>
+<aside><section class="panel"><h2>Decision map</h2><div id="decisions"></div></section><section class="panel"><details><summary>Facts and sources</summary><div id="facts"></div></details></section></aside></div>
+<footer id="footer"></footer>
+</main>
+<script id="session-data" type="application/json">{"schema_version":1,"session_id":"dashboard-example","revision":1,"round":1,"mode":"docs","goal":"What should our support dashboard help people do?","summary":"Illustrative first round. Settle the audience and the first useful outcome; those answers determine the access and workflow questions that follow.","facts":[],"decisions":[{"id":"Q1","question":"Who is the first version for?","why":"The audience determines which information belongs on the dashboard and which access decisions we need next.","depends_on":[],"status":"open","options":[{"id":"team","label":"Our immediate support team","detail":"Focus on a shared daily workflow with a small group."},{"id":"company","label":"Several internal teams","detail":"Include handoffs and decide what each team can see."},{"id":"customers","label":"Customers as well","detail":"Customer access adds decisions about data separation and external communication."}],"recommendation":"Start with the immediate team if the goal is to validate usefulness quickly; expand only when a concrete cross-team need is clear.","answer":null},{"id":"Q2","question":"Which outcome matters most in the first version?","why":"A clear first outcome helps us judge whether a feature belongs in scope.","depends_on":[],"status":"open","options":[{"id":"ownership","label":"Every issue has a clear owner","detail":"Find unassigned work and make handoffs visible."},{"id":"blockers","label":"See which integrations are blocked","detail":"Prioritize the cases preventing customers from launching."},{"id":"reporting","label":"Reduce time spent preparing status reports","detail":"Produce a reliable overview for recurring updates."}],"recommendation":"Choose the outcome that currently causes the most repeated work or missed follow-up. Ownership is a useful starting point only if that is the main pain.","answer":null},{"id":"Q3","question":"What information may each audience see?","why":"This depends on the chosen audience; don't assume a shared access model before Q1 is answered.","depends_on":["Q1"],"status":"open","options":[],"recommendation":"Decide after Q1. Inspect existing access rules before proposing changes.","answer":null}],"view":{"status":"questions-ready","frontier":["Q1","Q2"],"unresolved":["Q1","Q2","Q3"]}}</script>
+<script>
+const session = JSON.parse(document.getElementById('session-data').textContent);
+const el = (tag, text, className) => { const node = document.createElement(tag); if (text !== undefined) node.textContent = text; if (className) node.className = className; return node; };
+document.getElementById('goal').textContent = session.goal;
+document.getElementById('summary').textContent = session.summary;
+document.title = session.goal + ' · Grill in Lavish';
+for (const label of ['Round ' + session.round, 'Revision ' + session.revision, session.mode === 'docs' ? 'Interview + docs' : 'Interview', session.view.status]) document.getElementById('meta').append(el('span', label, 'pill'));
+for (const decision of session.decisions) {
+  const row = el('div', undefined, 'decision');
+  row.append(el('span', decision.status + (session.view.frontier.includes(decision.id) ? ' · ready now' : ''), 'state'), el('strong', decision.id + ' · ' + decision.question));
+  if (decision.status === 'resolved') row.append(el('p', decision.answer));
+  if (decision.status === 'excluded') row.append(el('p', decision.reason));
+  if (decision.depends_on.length) row.append(el('p', 'Depends on ' + decision.depends_on.join(', '), 'muted'));
+  document.getElementById('decisions').append(row);
+}
+for (const fact of session.facts) { const p = el('p', fact.statement); p.append(el('small', ' Source: ' + fact.source, 'muted')); document.getElementById('facts').append(p); }
+if (!session.facts.length) document.getElementById('facts').append(el('p', 'No verified facts recorded yet.', 'muted'));
+if (!session.view.frontier.length) {
+  const messages = {draft:'This draft needs a goal and decision tree before the interview starts.', 'ready-for-confirmation':'The recorded decisions are settled. Review the shared understanding with your agent before implementation.', 'research-needed':'The agent needs to resolve research prerequisites before asking the next questions.', blocked:'Some decisions remain blocked. The agent must reconcile their prerequisites.'};
+  document.getElementById('questions').append(el('div', messages[session.view.status] || 'No questions are ready yet.', 'card'));
+}
+for (const id of session.view.frontier) {
+  const question = session.decisions.find(d => d.id === id);
+  const form = el('form', undefined, 'card'); form.dataset.lavishQuestion = session.session_id + ':' + id;
+  form.append(el('div', id, 'qid'), el('h3', question.question), el('p', question.why, 'muted'), el('div', 'Recommendation: ' + question.recommendation, 'recommendation'));
+  const fieldset = el('fieldset'); fieldset.style.border = '0'; fieldset.style.padding = '0'; fieldset.style.margin = '0';
+  const legend = el('legend', 'Choose an option (optional)', 'muted'); fieldset.append(legend);
+  for (const option of question.options) {
+    const label = el('label', undefined, 'option'), radio = el('input'); radio.type = 'radio'; radio.name = 'choice'; radio.value = option.id;
+    const text = el('span', option.label); text.append(el('small', option.detail)); label.append(radio, text); fieldset.append(label);
+  }
+  const otherLabel = el('label', undefined, 'option'), otherRadio = el('input'); otherRadio.type = 'radio'; otherRadio.name = 'choice'; otherRadio.value = '';
+  otherLabel.append(otherRadio, el('span', 'My own answer')); fieldset.append(otherLabel); form.append(fieldset);
+  const notesLabel = el('label', 'Your answer or additional context', 'notes-label'); notesLabel.htmlFor = 'notes-' + id;
+  const notes = el('textarea'); notes.name = 'notes'; notes.id = notesLabel.htmlFor;
+  const submit = el('button', 'Queue answer'); submit.type = 'submit';
+  const status = el('p', '', 'status'); status.setAttribute('role', 'status');
+  const preview = el('textarea'); preview.readOnly = true; preview.hidden = true; preview.setAttribute('aria-label', 'Prepared answer payload');
+  form.append(notesLabel, notes, submit, status, preview);
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    const values = new FormData(form), choice = values.get('choice'), written = String(values.get('notes') || '').trim();
+    if ((!choice || choice === '') && !written) { status.textContent = 'Choose an option or write your answer.'; return; }
+    const data = {session_id:session.session_id, revision:session.revision, round:session.round, question_id:id, option_id:choice || '', notes:written};
+    const label = question.options.find(o => o.id === choice)?.label || 'Custom answer';
+    const prompt = 'Review this answer to ' + id + ' and recompute the interview frontier. ' + JSON.stringify(data);
+    if (!window.lavish || typeof window.lavish.queuePrompt !== 'function') {
+      preview.hidden = false; preview.value = prompt; status.textContent = 'Standalone preview: nothing was sent. Open this page through Lavish, or copy this answer to your agent.'; return;
+    }
+    try {
+      await window.lavish.queuePrompt(prompt, {tag:'grill-answer',text:id + ': ' + label,element:form,queueKey:session.session_id + ':' + id,data});
+      preview.hidden = true; status.textContent = 'Queued. Use Lavish’s Send to Agent to deliver your answers.';
+    } catch { status.textContent = 'Could not queue the answer. Your input is still here; retry when Lavish is available.'; }
+  });
+  document.getElementById('questions').append(form);
+}
+document.getElementById('footer').textContent = 'Session ' + session.session_id + ' · Decisions are recorded by your agent after review. This page does not run an LLM.';
+</script>
+</body></html>

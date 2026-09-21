@@ -1,0 +1,13 @@
+{
+  "name": "grill-lavish",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Iterative questioning through Lavish's visual interface",
+  "type": "module",
+  "engines": {"node": ">=20"},
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "demo": "node skills/grill-lavish/scripts/session.mjs render examples/dashboard.session.json examples/dashboard.html"
+  },
+  "license": "MIT"
+}

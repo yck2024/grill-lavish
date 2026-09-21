@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "session_id": "dashboard-example",
+  "revision": 1,
+  "round": 1,
+  "mode": "docs",
+  "goal": "What should our support dashboard help people do?",
+  "summary": "Illustrative first round. Settle the audience and the first useful outcome; those answers determine the access and workflow questions that follow.",
+  "facts": [],
+  "decisions": [
+    {
+      "id": "Q1",
+      "question": "Who is the first version for?",
+      "why": "The audience determines which information belongs on the dashboard and which access decisions we need next.",
+      "depends_on": [],
+      "status": "open",
+      "options": [
+        {"id": "team", "label": "Our immediate support team", "detail": "Focus on a shared daily workflow with a small group."},
+        {"id": "company", "label": "Several internal teams", "detail": "Include handoffs and decide what each team can see."},
+        {"id": "customers", "label": "Customers as well", "detail": "Customer access adds decisions about data separation and external communication."}
+      ],
+      "recommendation": "Start with the immediate team if the goal is to validate usefulness quickly; expand only when a concrete cross-team need is clear.",
+      "answer": null
+    },
+    {
+      "id": "Q2",
+      "question": "Which outcome matters most in the first version?",
+      "why": "A clear first outcome helps us judge whether a feature belongs in scope.",
+      "depends_on": [],
+      "status": "open",
+      "options": [
+        {"id": "ownership", "label": "Every issue has a clear owner", "detail": "Find unassigned work and make handoffs visible."},
+        {"id": "blockers", "label": "See which integrations are blocked", "detail": "Prioritize the cases preventing customers from launching."},
+        {"id": "reporting", "label": "Reduce time spent preparing status reports", "detail": "Produce a reliable overview for recurring updates."}
+      ],
+      "recommendation": "Choose the outcome that currently causes the most repeated work or missed follow-up. Ownership is a useful starting point only if that is the main pain.",
+      "answer": null
+    },
+    {
+      "id": "Q3",
+      "question": "What information may each audience see?",
+      "why": "This depends on the chosen audience; don't assume a shared access model before Q1 is answered.",
+      "depends_on": ["Q1"],
+      "status": "open",
+      "options": [],
+      "recommendation": "Decide after Q1. Inspect existing access rules before proposing changes.",
+      "answer": null
+    }
+  ]
+}
