@@ -9,12 +9,12 @@ const requireThat = (condition, message) => { if (!condition) throw new Error(me
 
 export function validate(state) {
   requireThat(state && typeof state === 'object', 'State must be an object');
-  requireThat(state.schema_version === 1, 'Unsupported schema_version');
+  requireThat(state.schema_version === 2, 'Unsupported schema_version');
   requireThat(typeof state.session_id === 'string' && idPattern.test(state.session_id), 'Invalid session_id');
   for (const field of ['revision', 'round']) {
     requireThat(Number.isSafeInteger(state[field]) && state[field] > 0, `${field} must be a positive integer`);
   }
-  requireThat(['interview', 'docs'].includes(state.mode), 'Invalid mode');
+  requireThat(state.discussion_only === undefined || typeof state.discussion_only === 'boolean', 'discussion_only must be a boolean');
   requireThat(nonempty(state.goal), 'goal is required');
   requireThat(typeof state.summary === 'string', 'summary must be text');
   requireThat(Array.isArray(state.facts), 'facts must be an array');
@@ -99,7 +99,7 @@ async function main(args) {
     throw new Error('Usage: session.mjs init <state.json> | check <state.json> | render <state.json> <review.html>');
   }
   if (command === 'init') {
-    const draft = { schema_version: 1, session_id: randomUUID(), revision: 1, round: 1, mode: 'interview', goal: 'Replace with the user\'s actual goal', summary: '', facts: [], decisions: [] };
+    const draft = { schema_version: 2, session_id: randomUUID(), revision: 1, round: 1, discussion_only: false, goal: 'Replace with the user\'s actual goal', summary: '', facts: [], decisions: [] };
     await mkdir(dirname(resolve(input)), { recursive: true });
     await writeFile(input, JSON.stringify(draft, null, 2) + '\n', { flag: 'wx' });
     console.log(`Created draft: ${input}`); return;

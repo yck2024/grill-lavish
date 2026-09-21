@@ -1,4 +1,4 @@
 interface:
   display_name: "Grill in Lavish"
   short_description: "Probe decisions through a visual Lavish interview"
-  default_prompt: "Use $grill-lavish in docs mode to clarify this project through Lavish and record settled terminology and decisions."
+  default_prompt: "Use $grill-lavish to clarify this plan through Lavish. Keep the glossary and decision records current as answers settle."

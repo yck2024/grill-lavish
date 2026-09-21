@@ -2,8 +2,8 @@
 
 **Rigorous questions. A readable interface. A plan that improves after every answer.**
 
-An independent Agent Skill combining [Matt Pocock's grilling workflows](https://github.com/mattpocock/skills)
-with [Lavish AXI](https://github.com/kunchenguid/lavish-axi). The agent decides
+An independent Agent Skill that runs [Matt Pocock's grill-with-docs](https://github.com/mattpocock/skills)
+through [Lavish AXI](https://github.com/kunchenguid/lavish-axi). The agent decides
 what to ask next; Lavish displays each round and sends your answers back.
 
 This is a small integration, not a fork of Lavish or a standalone AI app.
@@ -12,21 +12,47 @@ This is a small integration, not a fork of Lavish or a standalone AI app.
 
 ```mermaid
 flowchart TD
-  A[Agent selects eligible questions] --> B[Lavish shows the current round]
+  A[Agent recomputes the frontier of the design tree] --> B[Lavish shows the round]
   B --> C[You answer or annotate]
-  C --> A
-  A --> D[Record settled decisions]
-  D --> E[Update glossary and ADRs in docs mode]
+  C --> D[Agent records settled decisions]
+  D --> E[Glossary and ADRs updated as terms and decisions settle]
+  E --> A
 ```
 
-- **Interview mode:** stress-test assumptions, clarify scope, and keep generating
-  follow-ups based on your answers.
-- **Docs mode:** also sharpen project vocabulary and record meaningful decisions
-  while the interview is happening.
-- **Visual rounds:** read concise question cards, recommendations, and a decision
-  map; answer with options or your own words.
-- **Resumable state:** save decisions independently of the browser, including
-  dependencies and unresolved research.
+One workflow, no modes to pick:
+
+- **Always:** read the project's existing docs, ask the whole frontier through
+  Lavish, and generate follow-ups from your answers.
+- **When a term settles:** the glossary (`CONTEXT.md`) is updated in that round.
+- **When a decision is hard to reverse, surprising without context, and a real
+  trade-off:** an ADR is offered or recorded.
+- **When you say "discussion only":** project documents stay untouched and
+  everything lives in session state, including after a resume.
+
+Visual rounds show concise question cards, recommendations, and a decision map;
+answer with options or your own words. State is resumable and saved
+independently of the browser, including dependencies and unresolved research.
+
+## How it is built
+
+`grill-lavish` is a thin coordinator: it loads the upstream skills and adds the
+Lavish transport. Nothing about questioning or documentation is restated here.
+
+| Skill | Role | Source |
+| --- | --- | --- |
+| `grilling` | Questioning discipline: design tree, frontier, rounds | Matt Pocock, verbatim copy |
+| `domain-modeling` | Glossary (`CONTEXT.md`) and ADR rules and formats | Matt Pocock, verbatim copy |
+| `grill-with-docs` | Upstream entrypoint that composes the two above | Matt Pocock, verbatim copy |
+| `grill-me` | Upstream entrypoint for grilling alone | Matt Pocock, verbatim copy |
+| `lavish` | Renders the page and returns your feedback | Kun Chen, external runtime via `npx -y lavish-axi` |
+
+The copies under `skills/` are unmodified snapshots of
+[mattpocock/skills](https://github.com/mattpocock/skills) at the commit listed in
+[sources.md](skills/grill-lavish/references/sources.md). `grill-with-docs` and
+`grill-me` are user-invoked upstream, so a skill cannot call them; `grill-lavish`
+loads `grilling` and `domain-modeling` directly, which is what `grill-with-docs`
+does. If Matt's skills are already installed, the agent uses those; the bundled
+copies are a fallback and a way to install everything from one repository.
 
 ## Install
 
@@ -34,7 +60,15 @@ You need Node.js 20+, an agent that can read Agent Skills and run shell commands
 and a browser that can reach the agent's local Lavish server. No API key is
 needed by this integration; model usage remains with your chosen agent.
 
-Install directly from GitHub:
+Install everything from GitHub:
+
+```sh
+npx skills add yck2024/grill-lavish --skill '*'
+```
+
+Or pick only what you are missing, for example when Matt's skills are already
+installed through `claude plugins install mattpocock-skills` or
+`npx skills add mattpocock/skills`:
 
 ```sh
 npx skills add yck2024/grill-lavish --skill grill-lavish
@@ -45,28 +79,30 @@ Or clone and install from a local checkout:
 ```sh
 git clone https://github.com/yck2024/grill-lavish.git
 cd grill-lavish
-npx skills add . --skill grill-lavish
+npx skills add . --skill '*'
 ```
 
 Choose your agent in the installer's prompts. Add `-g` for a global install.
 For a private repository, a local authenticated checkout avoids assuming the
 installer can fetch private GitHub content. This project is not published to npm.
 
-The bundled skill includes the adapted questioning and documentation rules, so
-the original Matt skills are optional. Lavish is started on demand through
-`npx -y lavish-axi`. Respect a project's installed or pinned Lavish version.
+Lavish is started on demand through `npx -y lavish-axi`. Respect a project's
+installed or pinned Lavish version.
 
 ## Use
 
 Ask your agent:
 
-> Use grill-lavish in interview mode to clarify this feature. Show each round
-> in Lavish and keep asking follow-up questions until the plan is understood.
+> Grill me in Lavish about this feature. Keep asking follow-up questions until
+> the plan is understood.
 
 Or:
 
-> Use grill-lavish in docs mode to design our support dashboard. Maintain the
-> glossary and record significant decisions as we go. Don't implement yet.
+> Use grill-lavish to design our support dashboard. Don't implement yet.
+
+Or, to keep project documents untouched:
+
+> Use grill-lavish, discussion only, to think through the migration.
 
 In clients exposing skill slash commands, invoke `/grill-lavish`. Natural
 language also works when the agent recognizes installed skill descriptions.
@@ -98,10 +134,13 @@ fallback. It does not pretend that an agent is connected.
 
 | File | Purpose |
 | --- | --- |
-| `skills/grill-lavish/SKILL.md` | Agent workflow and review loop |
-| `skills/grill-lavish/references/` | Questioning, docs, state, and source rules |
+| `skills/grill-lavish/SKILL.md` | Coordinator: loads the upstream skills, runs the Lavish loop |
+| `skills/grill-lavish/references/state.md` | Session JSON contract (the design tree) |
+| `skills/grill-lavish/references/sources.md` | Upstream commits and how to refresh the copies |
 | `skills/grill-lavish/scripts/session.mjs` | Dependency validation and HTML rendering |
 | `skills/grill-lavish/assets/review.html` | Portable question-page template |
+| `skills/grilling/`, `skills/domain-modeling/` | Verbatim upstream skills the coordinator loads |
+| `skills/grill-with-docs/`, `skills/grill-me/` | Verbatim upstream entrypoints, for completeness |
 | `examples/dashboard.session.json` | Illustrative first round |
 | `test/session.test.mjs` | State and rendering behavior checks |
 
@@ -125,15 +164,16 @@ reliably wake the same agent. A stopped or disconnected review is not approval
 to build. Browser previews and automated state tests do not establish end-to-end
 compatibility with every version of Claude Code, Codex, Pi, or Lavish.
 
-Version 0.1.0 is a starting integration, not a full automatic orchestrator:
-the agent checkpoints feedback, handles stale answers, revises the decision tree,
-and writes project documentation according to the skill instructions. The
-renderer does not perform those reasoning steps itself.
+Version 0.2.0 removes the interview/docs mode split (session `schema_version`
+is now 2) and delegates questioning and documentation to the upstream skills.
+The agent checkpoints feedback, handles stale answers, revises the design tree,
+and writes project documentation according to those skills. The renderer does
+not perform those reasoning steps itself.
 
 ## Credits
 
-Questioning and documentation behavior is adapted from Matt Pocock's MIT-licensed
-skills. Visual feedback uses Kun Chen's MIT-licensed Lavish AXI. See
-[THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md) and the skill's
-[source notes](skills/grill-lavish/references/sources.md) for reviewed versions.
-Neither author is affiliated with or endorses this integration.
+Questioning and documentation behavior comes from Matt Pocock's MIT-licensed
+skills, redistributed verbatim under `skills/`. Visual feedback uses Kun Chen's
+MIT-licensed Lavish AXI. See [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)
+and the skill's [source notes](skills/grill-lavish/references/sources.md) for
+reviewed versions. Neither author is affiliated with or endorses this integration.

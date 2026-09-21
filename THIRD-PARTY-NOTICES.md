@@ -1,6 +1,6 @@
 # Third-party notices
 
-This integration adapts Matt Pocock's questioning and domain-modeling instructions and uses the documented Lavish feedback interface. Both projects are independent of this repository. Their licenses are reproduced below.
+This repository redistributes verbatim copies of four of Matt Pocock's skills under `skills/` (`grill-me`, `grilling`, `grill-with-docs`, `domain-modeling`), taken from https://github.com/mattpocock/skills at commit `c55ee46073ed923f86ce59a5eb3b6d895095d1b7`, and uses the documented Lavish feedback interface. Both projects are independent of this repository. Their licenses are reproduced below.
 
 ## Matt Pocock — skills
 

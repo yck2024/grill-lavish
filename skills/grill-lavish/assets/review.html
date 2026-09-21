@@ -44,7 +44,7 @@ const el = (tag, text, className) => { const node = document.createElement(tag);
 document.getElementById('goal').textContent = session.goal;
 document.getElementById('summary').textContent = session.summary;
 document.title = session.goal + ' · Grill in Lavish';
-for (const label of ['Round ' + session.round, 'Revision ' + session.revision, session.mode === 'docs' ? 'Interview + docs' : 'Interview', session.view.status]) document.getElementById('meta').append(el('span', label, 'pill'));
+for (const label of ['Round ' + session.round, 'Revision ' + session.revision, session.discussion_only ? 'Discussion only' : 'Docs as we go', session.view.status]) document.getElementById('meta').append(el('span', label, 'pill'));
 for (const decision of session.decisions) {
   const row = el('div', undefined, 'decision');
   row.append(el('span', decision.status + (session.view.frontier.includes(decision.id) ? ' · ready now' : ''), 'state'), el('strong', decision.id + ' · ' + decision.question));

@@ -1,9 +1,8 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "session_id": "dashboard-example",
   "revision": 1,
   "round": 1,
-  "mode": "docs",
   "goal": "What should our support dashboard help people do?",
   "summary": "Illustrative first round. Settle the audience and the first useful outcome; those answers determine the access and workflow questions that follow.",
   "facts": [],

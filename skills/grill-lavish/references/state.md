@@ -1,8 +1,13 @@
 # Session contract
 
-Use a JSON object with `schema_version: 1`, a stable `session_id`, positive
-integer `revision` and `round`, mode (`interview` or `docs`), `goal`, `summary`,
-`facts` (statement/source pairs), and `decisions`.
+The session JSON is the design tree from `grilling`, kept as the agent's source
+of truth. The review page is derived from it.
+
+Top level: `schema_version: 2`, a stable `session_id`, positive integer
+`revision` and `round`, `goal`, `summary`, `facts` (statement/source pairs),
+`decisions`, and optional `discussion_only` (boolean). Set `discussion_only`
+to `true` when the user asks for discussion only; a resumed session then keeps
+project documents untouched without asking again.
 
 Each decision has `id`, `question`, `why`, `depends_on` (IDs), `status`,
 `options` (id/label/detail objects), `recommendation`, and `answer` (null or text).
@@ -12,8 +17,9 @@ or explain why evidence is insufficient to recommend a choice.
 
 Statuses:
 
-- `open`: unresolved; eligible only when every dependency is resolved.
-- `researching`: awaits facts the agent must retrieve. Not a user question yet.
+- `open`: unresolved; on the frontier only when every dependency is resolved.
+- `researching`: a running exploration for facts the agent must retrieve. Not a
+  user question yet; only its descendants wait for it.
 - `resolved`: requires a nonempty answer grounded in user input.
 - `excluded`: requires a nonempty reason grounded in user-approved scope.
   Exclusion does not satisfy dependencies; revise or exclude descendants explicitly.

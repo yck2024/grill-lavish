@@ -57,6 +57,19 @@ test('untrusted text cannot terminate the embedded JSON script', async () => {
   assert.equal(JSON.parse(data).goal, s.goal);
   assert.deepEqual(JSON.parse(data).view.frontier, ['Q1', 'Q2']);
 });
+test('discussion_only is optional and must be a boolean when present', () => {
+  const a = fresh(); delete a.discussion_only; validate(a);
+  const b = fresh(); b.discussion_only = true; validate(b);
+  const c = fresh(); c.discussion_only = 'yes'; assert.throws(() => validate(c), /discussion_only/);
+});
+test('the page labels a discussion-only session', async () => {
+  const s = fresh(); s.discussion_only = true;
+  assert.ok((await render(s)).includes('Discussion only'));
+});
+test('schema version 1 sessions carrying a mode field are rejected', () => {
+  const s = fresh(); s.schema_version = 1; s.mode = 'docs';
+  assert.throws(() => validate(s), /schema_version/);
+});
 test('CLI init preserves an existing file and render preserves the input', async () => {
   const dir = await mkdtemp(join(tmpdir(), 'grill-lavish-'));
   const cli = fileURLToPath(new URL('../skills/grill-lavish/scripts/session.mjs', import.meta.url));
